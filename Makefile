@@ -1,3 +1,7 @@
+# SOURCE: https://github.com/autopilotpattern/jenkins/blob/master/makefile
+MAKEFLAGS += --warn-undefined-variables
+# .SHELLFLAGS := -eu -o pipefail
+
 PR_SHA           := $(shell git rev-parse HEAD)
 REPO_NAME        := bossjones/docker-flask-mongo
 IMAGE_TAG        := $(REPO_NAME):$(PR_SHA)
@@ -148,3 +152,39 @@ contrib-tools: mkdir-ptpython cheetsheets
 .PHONY: pip-tools
 pip-tools:
 	pip install pip-tools pipdeptree
+
+
+dc-up:
+	docker-compose -f docker-compose.yml create && \
+	docker-compose -f docker-compose.yml start
+
+dc-down:
+	docker-compose -f docker-compose.yml stop && \
+	docker-compose -f docker-compose.yml down
+
+dc-restart: dc-down dc-up
+
+dc-build:
+	docker-compose build --force-rm --pull
+
+pull:
+	docker-compose pull
+
+up: pull
+	docker-compose up
+
+dev-up: up
+
+dev-down: down
+
+up-d: pull
+	docker-compose up -d
+
+down:
+	docker-compose down && \
+	docker-compose rm -f
+
+restart: down up
+
+shell:
+	docker exec -ti $(IMAGE_TAG):latest /bin/bash
