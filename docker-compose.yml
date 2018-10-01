@@ -1,0 +1,22 @@
+version: "3"
+services:
+    web:
+        build: .
+        command: python -u app.py
+        ports:
+            - "5000:5000"
+        networks:
+            - todo
+        volumes:
+            - .:/app
+    db:
+        image: mongo:3.0.15
+        networks:
+            - todo
+        volumes:
+            - "mongo-data:/data/db"
+networks:
+    todo:
+
+volumes:
+    mongo-data:
