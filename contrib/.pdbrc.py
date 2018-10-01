@@ -2,9 +2,10 @@ from pdb import DefaultConfig
 
 
 class Config(DefaultConfig):
-    prompt = 'pdb> '
+    prompt = "pdb> "
     sticky_by_default = True
-    editor = 'vim'
+    editor = "vim"
+
 
 # SOURCE: https://github.com/giampaolo/sysconf/blob/8e80194e59d643eae54f063d32a4feac8138a5f3/home/.pdbrc.py
 # FIXME: Try this? 9/24/2018
