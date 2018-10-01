@@ -1,0 +1,26 @@
+# General files
+.git
+.github
+config
+
+# Test related files
+.tox
+
+# Other virtualization methods
+venv
+.vagrant
+
+# Temporary files
+**/__pycache__
+
+data/*
+.git/*
+fixtures/*
+notes/*
+temp*
+cf82ee4458aa.log
+
+behance_corp_repo_list.txt
+behance_pub_repo_list.txt
+behance_pub_to_corp_column_list.diff
+behance_pub_to_corp_default_list.diff

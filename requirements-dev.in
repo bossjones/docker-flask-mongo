@@ -1,0 +1,28 @@
+# NOTE: Used to generate pip-compile lock files
+# betamax
+# betamax-matchers
+black
+coveralls
+flake8
+flake8-docstrings
+ipdb
+isort
+MonkeyType
+mypy
+pdbpp
+pip-tools
+pipdeptree
+pylint
+pytest
+pytest-black
+pytest-cov
+pytest-mock
+pytest-sugar
+pytest-timeout
+restructuredtext_lint
+sphinx
+betamax
+betamax_matchers
+easy-ptvsd
+py-spy
+ptpython
