@@ -9,6 +9,10 @@ client = MongoClient(
     27017)
 db = client.tododb
 
+@app.route("/hello")
+def hello():
+    return "Hello World from Flask in a uWSGI Nginx Docker container with \
+     Python 3.6 (default)"
 
 @app.route('/')
 def todo():
