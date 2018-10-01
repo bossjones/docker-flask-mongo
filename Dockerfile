@@ -132,6 +132,8 @@ RUN set -ex; \
     rm -f get-pip.py && \
     echo 'manylinux1_compatible = True' > /usr/local/lib/python3.6/site-packages/_manylinux.py
 
+# https://github.com/benfred/py-spy/issues/23 ^^ Regarding echo compatible ^^
+
 # CMD ["python3"]
 
 # ---------------------------
@@ -154,7 +156,7 @@ WORKDIR /app
 
 STOPSIGNAL SIGINT
 
-CMD [ "python", "app.py" ]
+CMD [ "python", "/app/app.py" ]
 
 # add app info as environment variables
 ARG GIT_COMMIT

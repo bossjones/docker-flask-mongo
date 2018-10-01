@@ -154,9 +154,12 @@ pip-tools:
 	pip install pip-tools pipdeptree
 
 
+# dc-up:
+# 	docker-compose -f docker-compose.yml create && \
+# 	docker-compose -f docker-compose.yml start
+
 dc-up:
-	docker-compose -f docker-compose.yml create && \
-	docker-compose -f docker-compose.yml start
+	docker-compose -f docker-compose.yml up -d
 
 dc-down:
 	docker-compose -f docker-compose.yml stop && \
@@ -164,21 +167,24 @@ dc-down:
 
 dc-restart: dc-down dc-up
 
-dc-build:
+dc-build-force:
 	docker-compose build --force-rm --pull
+
+dc-build:
+	docker-compose build
 
 pull:
 	docker-compose pull
 
 up: pull
-	docker-compose up
+	docker-compose up -d
 
 dev-up: up
 
 dev-down: down
 
-up-d: pull
-	docker-compose up -d
+# up-d: pull
+# 	docker-compose up -d
 
 down:
 	docker-compose down && \
@@ -188,3 +194,6 @@ restart: down up
 
 shell:
 	docker exec -ti $(IMAGE_TAG):latest /bin/bash
+
+tail:
+	docker logs -f $(CONTAINER_NAME)
