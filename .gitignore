@@ -227,3 +227,5 @@ behance_pub_to_corp_default_list.diff
 .ipynb_checkpoints
 *.ipynb
 *.bak
+
+src/supervisord.pid
