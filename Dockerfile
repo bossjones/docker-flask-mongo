@@ -135,7 +135,10 @@ RUN set -ex; \
 
 # ---------------------------
 
-RUN apk add --no-cache ca-certificates
+RUN apk add --no-cache bash \
+    ca-certificates \
+    curl \
+    jq
 
 ADD requirements.txt /tmp/requirements.txt
 ADD requirements-dev.txt /tmp/requirements-dev.txt
