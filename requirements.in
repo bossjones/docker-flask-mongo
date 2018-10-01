@@ -10,3 +10,4 @@ voluptuous
 # graphviz
 flask
 pymongo
+flask_monitoringdashboard

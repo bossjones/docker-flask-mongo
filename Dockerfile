@@ -140,7 +140,11 @@ RUN set -ex; \
 
 RUN apk add --no-cache bash \
     curl \
-    jq
+    jq \
+    gcc \
+    libc-dev \
+    unixodbc-dev \
+    linux-headers
 
 # ----------[UWSGI-NGINX] -----------------
 
@@ -374,6 +378,8 @@ ENV NGINX_MAX_UPLOAD 0
 # To modify this, change LISTEN_PORT environment variable.
 # (in a Dockerfile or with an option for `docker run`)
 ENV LISTEN_PORT 5000
+
+EXPOSE ${LISTEN_PORT}
 
 # Which uWSGI .ini file should be used, to make it customizable
 ENV UWSGI_INI /app/uwsgi.ini

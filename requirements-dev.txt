@@ -56,7 +56,6 @@ prompt-toolkit==1.0.15    # via ipython, ptpython
 ptpython==0.41
 ptvsd==3.0.0              # via easy-ptvsd
 ptyprocess==0.6.0         # via pexpect
-py-spy==0.1.6
 py==1.6.0                 # via pytest
 pycodestyle==2.3.1        # via flake8
 pydocstyle==2.1.1         # via flake8-docstrings

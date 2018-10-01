@@ -8,14 +8,34 @@ backoff==1.6.0
 certifi==2018.8.24        # via requests
 chardet==3.0.4            # via requests
 click==6.7                # via flask
+colorhash==1.0.2          # via flask-monitoringdashboard
 colorlog==3.1.4
+configparser==3.5.0       # via flask-monitoringdashboard
+decorator==4.3.0          # via plotly, traitlets
+flask-monitoringdashboard==2.0.6
+flask-paginate==0.5.1     # via flask-monitoringdashboard
+flask-wtf==0.14.2         # via flask-monitoringdashboard
 flask==1.0.2
 idna==2.7                 # via requests
+ipython-genutils==0.2.0   # via nbformat, traitlets
 itsdangerous==0.24        # via flask
 jinja2==2.10              # via flask
+jsonschema==2.6.0         # via nbformat
+jupyter-core==4.4.0       # via nbformat
 markupsafe==1.0           # via jinja2
+nbformat==4.4.0           # via plotly
+numpy==1.15.2             # via flask-monitoringdashboard
+plotly==2.7.0             # via flask-monitoringdashboard
+psutil==5.4.7             # via flask-monitoringdashboard
+pyjwt==1.6.4              # via flask-monitoringdashboard
 pymongo==3.7.1
+pytz==2018.5              # via flask-monitoringdashboard, plotly, tzlocal
 requests==2.19.1
+six==1.11.0               # via plotly, traitlets
+sqlalchemy==1.2.12        # via flask-monitoringdashboard
+traitlets==4.3.2          # via jupyter-core, nbformat
+tzlocal==1.5.1            # via flask-monitoringdashboard
 urllib3==1.23             # via requests
 voluptuous==0.11.5
 werkzeug==0.14.1          # via flask
+wtforms==2.2.1            # via flask-monitoringdashboard, flask-wtf

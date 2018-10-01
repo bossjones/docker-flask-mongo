@@ -2,9 +2,12 @@ import os
 from flask import Flask, redirect, url_for, request, render_template, jsonify
 from pymongo import MongoClient
 
+import flask_monitoringdashboard as dashboard
+
 # from flask_cors import CORS
 
 app = Flask(__name__)
+dashboard.bind(app)
 
 # CORS(app, resources={r"/*": {"origins": "*"}})
 
