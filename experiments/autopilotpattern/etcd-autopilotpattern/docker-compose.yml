@@ -1,0 +1,19 @@
+etcd:
+  image: autopilotpattern/etcd
+  mem_limit: 128m
+  labels:
+    - triton.cns.services=etcd
+    # - "traefik.frontend.rule=Host:etcd.docker.localhost"
+  restart: always
+  environment:
+    - DISCOVERY
+  command: >-
+    /usr/local/bin/etcd-manage start
+
+bootstrap:
+  image: autopilotpattern/etcd
+  mem_limit: 128m
+  ports:
+    - 4001:4001
+  command: >-
+    /usr/local/bin/etcd-manage bootstrap
