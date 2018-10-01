@@ -129,7 +129,8 @@ RUN set -ex; \
     -o \
     \( -type f -a \( -name '*.pyc' -o -name '*.pyo' \) \) \
     \) -exec rm -rf '{}' +; \
-    rm -f get-pip.py
+    rm -f get-pip.py && \
+    echo 'manylinux1_compatible = True' > /usr/local/lib/python3.6/site-packages/_manylinux.py
 
 # CMD ["python3"]
 
