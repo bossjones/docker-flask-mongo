@@ -136,7 +136,6 @@ RUN set -ex; \
 # ---------------------------
 
 RUN apk add --no-cache bash \
-    ca-certificates \
     curl \
     jq
 
