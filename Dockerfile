@@ -138,14 +138,32 @@ RUN set -ex; \
 
 # -----------[END PYTHON3]----------------
 
-RUN apk add --no-cache bash \
+RUN apk update && apk add --no-cache bash \
+    autoconf \
+    automake \
+    build-base \
+    bzip2 \
+    ccache \
+    cmake \
     curl \
-    jq \
     gcc \
+    git \
+    jq \
     libc-dev \
+    libtool \
+    linux-headers \
+    make \
+    perl \
+    py-pip \
+    py-yaml \
+    python-dev \
+    strace \
     unixodbc-dev \
-    linux-headers
+    unzip \
+    wget \
+    zip
 
+# libc6-compat \
 # ----------[UWSGI-NGINX] -----------------
 
 # Standard set up Nginx Alpine
