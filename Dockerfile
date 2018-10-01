@@ -417,6 +417,11 @@ CMD ["/start.sh"]
 
 # ---------------------------- end install flask options --------------------------
 
+# Note: You propably need to pass the timezone via an environment variable e.g.
+# by adding -e TZ=UTC. This prevents an UnknownTimeZoneError(zone)
+# exception (pytz.exceptions.UnknownTimeZoneError: 'local') when
+# generating the pages.
+ENV TZ 'UTC'
 # These go last to preserve the build cache.
 # add app info as environment variables
 ARG GIT_COMMIT
