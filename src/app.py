@@ -1,10 +1,13 @@
 import os
+import json
 from flask import Flask, redirect, url_for, request, render_template, jsonify
 from pymongo import MongoClient
 
 import flask_monitoringdashboard as dashboard
 import flask_profiler
 from flask_debugtoolbar import DebugToolbarExtension
+
+# from werkzeug.wrappers import Response
 
 # from flask_cors import CORS
 
@@ -81,6 +84,15 @@ def apiStatus():
     """api status"""
     return jsonify({"status": "OK"})
 
+@app.route('/json')
+def json():
+    return Response(response=json.dumps({'Hello': 'World'}), content_type='application/json')
+
+@app.route('/', methods=['POST'])
+def post_entry():
+    params = request.get_json()
+    return Response(response=json.dumps({'name': params.get('name'), 'gender': params.get('gender')}),
+                    content_type='application/json')
 
 # PROFILER
 if 'APP_PROFILER' in os.environ:

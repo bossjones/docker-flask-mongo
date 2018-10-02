@@ -22,6 +22,17 @@ services:
             - "9191:9191"
             - "80:80"
             - "443:443"
+        labels:
+            # - "traefik.backend=nginx1"
+            # - "traefik.frontend.rule=PathStrip: /nginx1"
+            # - "traefik.port=80"
+            # - "traefix.port=443"
+            # - "traefik.frontend.entryPoints=http"
+            - "traefik.enable=true"
+            - "traefik.backend=web"
+            - "traefik.port=80"
+            - "traefik.frontend.rule=Host:web.hyenalab.home"
+            - "traefik.backend.url=http://web.hyenalab.home"
         networks:
             - todo
         volumes:
@@ -34,6 +45,23 @@ services:
         volumes:
             - "mongo-data:/data/db"
 
+    locust-master:
+        image: swernst/locusts
+        networks:
+            - todo
+        volumes:
+        - ./scripts:/scripts
+        ports:
+        - "8089:8089"
+
+    locust-worker:
+        image: swernst/locusts
+        networks:
+            - todo
+        command: "--master-host=locust-master"
+        volumes:
+        - ./scripts:/scripts
+
 
     consul:
       image: consul:0.7.5
@@ -43,6 +71,22 @@ services:
       ports:
         - "8500:8500"
       restart: always
+
+    # The reverse proxy service (Træfik)
+    # reverse-proxy:
+    #     image: traefik  # The official Traefik docker image
+    #     command: --ping --api --docker  --docker.domain=hyenalab.home # Enables the web UI and tells Træfik to listen to docker
+    #     ports:
+    #     - "80:80"      # The HTTP port
+    #     - "8080:8080"  # The Web UI (enabled by --api)
+    #     volumes:
+    #     - /var/run/docker.sock:/var/run/docker.sock  # So that Traefik can listen to the Docker events
+
+    # # A container that exposes a simple API
+    # whoami:
+    #     image: emilevauge/whoami  # A container that exposes an API to show it's IP address
+    #     labels:
+    #     - "traefik.frontend.rule=Host:whoami.docker.localhost"
 
 networks:
     todo:

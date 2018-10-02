@@ -24,37 +24,38 @@ BROWSER := python -c "$$BROWSER_PYSCRIPT"
 open-coverage-report-html:
 	$(BROWSER) htmlcov/index.html
 
-.PHONY: help
-help:
-	@echo "make install-dev                 Pip install editable version of this cli tool"
+default: help
+
+help: ## Help dialog
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-40s\033[0m %s\n", $$1, $$2}'
 
 .PHONY: install
-install:
+install: ## installs app using python setup.py install
 	python setup.py install
 
 .PHONY: install-dev
-install-dev:
+install-dev: ## installs app w/ dev packages using python setup.py install
 	pip install -e .
 
 .PHONY: force-install-dev
-force-install-dev:
+force-install-dev: ## FORCE installs app w/ dev packages using python setup.py install
 	pip install -e . --force-reinstall
 
 .PHONY: install-deps
-install-deps:
+install-deps: ## Installs requirements.txt
 	pip install -r requirements.txt
 
 .PHONY: install-deps-all
-install-deps-all:
+install-deps-all: ## Installs requirements.txt and requirements-dev.txt
 	pip install -r requirements.txt; \
 	pip install -r requirements-dev.txt; \
 
 .PHONY: install-deps
-reinstall-deps-osx:
+reinstall-deps-osx: ## Re-Install requirements.txt w/ homebrew environment variables defined
 	env ARCHFLAGS="-arch x86_64" LDFLAGS="-L/usr/local/opt/openssl/lib" CFLAGS="-I/usr/local/opt/openssl/include" pip install --force-reinstall -r requirements.txt
 
 .PHONY: install-deps-all
-reinstall-deps-all-osx:
+reinstall-deps-all-osx: ## Re-Install requirements.txt and requirements-dev.txt w/ homebrew environment variables defined
 	env ARCHFLAGS="-arch x86_64" LDFLAGS="-L/usr/local/opt/openssl/lib" CFLAGS="-I/usr/local/opt/openssl/include" pip install --force-reinstall -r requirements.txt; \
 	env ARCHFLAGS="-arch x86_64" LDFLAGS="-L/usr/local/opt/openssl/lib" CFLAGS="-I/usr/local/opt/openssl/include" pip install --force-reinstall -r requirements-dev.txt; \
 
@@ -196,6 +197,8 @@ shell:
 	docker exec -ti $(IMAGE_TAG):latest /bin/bash
 
 tail:
-	docker logs -f $(CONTAINER_NAME)
+	./scripts/logs-ccze
+
+logs: tail
 
 rebuild: dc-build dc-up
