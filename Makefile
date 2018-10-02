@@ -197,3 +197,5 @@ shell:
 
 tail:
 	docker logs -f $(CONTAINER_NAME)
+
+rebuild: dc-build dc-up

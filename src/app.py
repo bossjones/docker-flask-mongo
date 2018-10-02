@@ -3,10 +3,32 @@ from flask import Flask, redirect, url_for, request, render_template, jsonify
 from pymongo import MongoClient
 
 import flask_monitoringdashboard as dashboard
+import flask_profiler
+from flask_debugtoolbar import DebugToolbarExtension
 
 # from flask_cors import CORS
 
 app = Flask(__name__)
+
+if 'APP_PROFILER' in os.environ:
+    app.config["DEBUG"] = True
+    # You need to declare necessary configuration to initialize
+    # flask-profiler as follows:
+    app.config["flask_profiler"] = {
+        "enabled": app.config["DEBUG"],
+        "storage": {
+            "engine": "sqlite"
+        },
+        "basicAuth":{
+            "enabled": True,
+            "username": "admin",
+            "password": "admin"
+        },
+        "ignore": [
+            "^/static/.*"
+        ]
+    }
+
 dashboard.bind(app)
 
 # CORS(app, resources={r"/*": {"origins": "*"}})
@@ -14,6 +36,13 @@ dashboard.bind(app)
 client = MongoClient("db", 27017)
 db = client.tododb
 
+PORT = os.environ.get("LISTEN_PORT")
+
+# SOURCE: http://www.brool.com/post/debugging-uwsgi/
+if 'APP_DEBUG' in os.environ:
+    app.debug = True
+    from werkzeug.debug import DebuggedApplication
+    app.wsgi_app = DebuggedApplication(app.wsgi_app, True)
 
 @app.route("/hello")
 def hello():
@@ -53,5 +82,18 @@ def apiStatus():
     return jsonify({"status": "OK"})
 
 
+# PROFILER
+if 'APP_PROFILER' in os.environ:
+    # In order to active flask-profiler, you have to pass flask
+    # app as an argument to flask-profiler.
+    # All the endpoints declared so far will be tracked by flask-profiler.
+    flask_profiler.init_app(app)
+
+if 'APP_DEBUG_TOOLBAR' in os.environ:
+    # set a 'SECRET_KEY' to enable the Flask session cookies
+    app.config['SECRET_KEY'] = os.environ.get("APP_DEBUG_TOOLBAR_SECRET_KEY")
+
+    toolbar = DebugToolbarExtension(app)
+
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", debug=True)
+    app.run(host="0.0.0.0", debug=True, port=5000)

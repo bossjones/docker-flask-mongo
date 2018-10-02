@@ -11,3 +11,5 @@ voluptuous
 flask
 pymongo
 flask_monitoringdashboard
+flask_profiler
+flask-debugtoolbar

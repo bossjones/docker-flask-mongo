@@ -2,8 +2,26 @@ version: "3"
 services:
     web:
         build: .
+        environment:
+            - FLASK_DEBUG=1
+            - LISTEN_PORT=8081
+            - APP_DEBUG=1
+            - APP_PROFILER=1
+            - APP_DEBUG_TOOLBAR=1
+            - APP_DEBUG_TOOLBAR_SECRET_KEY=blah
+        cap_add:
+            - SYS_PTRACE
+            - NET_ADMIN
+            - SYS_ADMIN
+        security_opt:
+            - label:apparmor:unconfined
         ports:
             - "5000:5000"
+            - "8080:8080"
+            - "8081:8081"
+            - "9191:9191"
+            - "80:80"
+            - "443:443"
         networks:
             - todo
         volumes:

@@ -230,3 +230,4 @@ behance_pub_to_corp_default_list.diff
 
 src/supervisord.pid
 etcd-browser
+*.db
