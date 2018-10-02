@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+echo "http://$(docker-machine ip dev)"

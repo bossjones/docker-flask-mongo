@@ -18,6 +18,7 @@ flask-httpauth==3.2.4     # via flask-profiler
 flask-monitoringdashboard==2.0.6
 flask-paginate==0.5.1     # via flask-monitoringdashboard
 flask-profiler==1.6
+flask-pymongo==2.1.0
 flask-wtf==0.14.2         # via flask-monitoringdashboard
 flask==1.0.2
 idna==2.7                 # via requests
@@ -32,7 +33,7 @@ numpy==1.15.2             # via flask-monitoringdashboard
 plotly==2.7.0             # via flask-monitoringdashboard
 psutil==5.4.7             # via flask-monitoringdashboard
 pyjwt==1.6.4              # via flask-monitoringdashboard
-pymongo==3.7.1
+pymongo==3.7.1            # via flask-pymongo
 pytz==2018.5              # via flask-monitoringdashboard, plotly, tzlocal
 requests==2.19.1
 six==1.11.0               # via plotly, traitlets

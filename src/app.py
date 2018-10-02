@@ -1,5 +1,5 @@
 import os
-import json
+import json as jsonlib
 from flask import Flask, redirect, url_for, request, render_template, jsonify
 from pymongo import MongoClient
 
@@ -7,11 +7,14 @@ import flask_monitoringdashboard as dashboard
 import flask_profiler
 from flask_debugtoolbar import DebugToolbarExtension
 
-# from werkzeug.wrappers import Response
-
+from flask_pymongo import PyMongo
+from werkzeug.wrappers import Response
 # from flask_cors import CORS
 
 app = Flask(__name__)
+
+app.config["MONGO_URI"] = "mongodb://db:27017/tododb"
+mongo = PyMongo(app)
 
 if 'APP_PROFILER' in os.environ:
     app.config["DEBUG"] = True
@@ -36,8 +39,8 @@ dashboard.bind(app)
 
 # CORS(app, resources={r"/*": {"origins": "*"}})
 
-client = MongoClient("db", 27017)
-db = client.tododb
+# client = MongoClient("db", 27017)
+# db = client.tododb
 
 PORT = os.environ.get("LISTEN_PORT")
 
@@ -55,7 +58,7 @@ def hello():
 
 @app.route("/")
 def todo():
-    _items = db.tododb.find()
+    _items = mongo.db.tododb.find()
     items = [item for item in _items]
 
     return render_template("todo.html", items=items)
@@ -67,7 +70,7 @@ def new():
         "name": request.form["name"],
         "description": request.form["description"],
     }
-    db.tododb.insert_one(item_doc)
+    mongo.db.tododb.insert_one(item_doc)
 
     return redirect(url_for("todo"))
 
@@ -86,12 +89,12 @@ def apiStatus():
 
 @app.route('/json')
 def json():
-    return Response(response=json.dumps({'Hello': 'World'}), content_type='application/json')
+    return Response(response=jsonlib.dumps({'Hello': 'World'}), content_type='application/json')
 
 @app.route('/', methods=['POST'])
 def post_entry():
     params = request.get_json()
-    return Response(response=json.dumps({'name': params.get('name'), 'gender': params.get('gender')}),
+    return Response(response=jsonlib.dumps({'name': params.get('name'), 'gender': params.get('gender')}),
                     content_type='application/json')
 
 # PROFILER

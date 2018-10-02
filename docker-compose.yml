@@ -4,7 +4,7 @@ services:
         build: .
         environment:
             - FLASK_DEBUG=1
-            - LISTEN_PORT=8081
+            - LISTEN_PORT=8888
             - APP_DEBUG=1
             - APP_PROFILER=1
             - APP_DEBUG_TOOLBAR=1
@@ -16,9 +16,9 @@ services:
         security_opt:
             - label:apparmor:unconfined
         ports:
+            - "8888:8888"
             - "5000:5000"
             - "8080:8080"
-            - "8081:8081"
             - "9191:9191"
             - "80:80"
             - "443:443"
@@ -40,10 +40,26 @@ services:
     db:
         image: mongo:3.0.15
         restart: always
+        # environment:
+        # - MONGO_DATA_DIR=/data/db
+        # - MONGO_LOG_DIR=/dev/null
         networks:
             - todo
         volumes:
             - "mongo-data:/data/db"
+
+    mongoex:
+        image: mongo-express
+        environment:
+        - ME_CONFIG_OPTIONS_EDITORTHEME=ambiance
+        - ME_CONFIG_MONGODB_SERVER=db
+        - ME_CONFIG_MONGODB_PORT=27017
+        - ME_CONFIG_MONGODB_ENABLE_ADMIN=true
+        # - ME_CONFIG_MONGODB_AUTH_DATABASE=admin
+        ports:
+        - "8081:8081"
+        depends_on:
+        - db
 
     locust-master:
         image: swernst/locusts
