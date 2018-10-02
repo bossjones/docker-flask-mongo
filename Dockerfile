@@ -17,7 +17,53 @@ ENV PATH /usr/local/bin:$PATH
 
 # http://bugs.python.org/issue19846
 # > At the moment, setting "LANG=C" on a Linux system *fundamentally breaks Python 3*, and that's not OK.
-ENV LANG C.UTF-8
+ENV LANG=C.UTF-8
+
+# RUN echo "http://dl-8.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories
+
+# RUN apk --no-cache --update-cache add gcc gfortran python python-dev py-pip build-base wget freetype-dev libpng-dev openblas-dev
+
+# RUN ln -s /usr/include/locale.h /usr/include/xlocale.h
+
+# Here we install GNU libc (aka glibc) and set C.UTF-8 locale as default.
+
+# RUN ALPINE_GLIBC_BASE_URL="https://github.com/sgerrand/alpine-pkg-glibc/releases/download" && \
+#     ALPINE_GLIBC_PACKAGE_VERSION="2.28-r0" && \
+#     ALPINE_GLIBC_BASE_PACKAGE_FILENAME="glibc-$ALPINE_GLIBC_PACKAGE_VERSION.apk" && \
+#     ALPINE_GLIBC_BIN_PACKAGE_FILENAME="glibc-bin-$ALPINE_GLIBC_PACKAGE_VERSION.apk" && \
+#     ALPINE_GLIBC_I18N_PACKAGE_FILENAME="glibc-i18n-$ALPINE_GLIBC_PACKAGE_VERSION.apk" && \
+#     apk add --no-cache --virtual=.build-dependencies wget ca-certificates && \
+#     echo \
+#         "-----BEGIN PUBLIC KEY-----\
+#         MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApZ2u1KJKUu/fW4A25y9m\
+#         y70AGEa/J3Wi5ibNVGNn1gT1r0VfgeWd0pUybS4UmcHdiNzxJPgoWQhV2SSW1JYu\
+#         tOqKZF5QSN6X937PTUpNBjUvLtTQ1ve1fp39uf/lEXPpFpOPL88LKnDBgbh7wkCp\
+#         m2KzLVGChf83MS0ShL6G9EQIAUxLm99VpgRjwqTQ/KfzGtpke1wqws4au0Ab4qPY\
+#         KXvMLSPLUp7cfulWvhmZSegr5AdhNw5KNizPqCJT8ZrGvgHypXyiFvvAH5YRtSsc\
+#         Zvo9GI2e2MaZyo9/lvb+LbLEJZKEQckqRj4P26gmASrZEPStwc+yqy1ShHLA0j6m\
+#         1QIDAQAB\
+#         -----END PUBLIC KEY-----" | sed 's/   */\n/g' > "/etc/apk/keys/sgerrand.rsa.pub" && \
+#     wget \
+#         "$ALPINE_GLIBC_BASE_URL/$ALPINE_GLIBC_PACKAGE_VERSION/$ALPINE_GLIBC_BASE_PACKAGE_FILENAME" \
+#         "$ALPINE_GLIBC_BASE_URL/$ALPINE_GLIBC_PACKAGE_VERSION/$ALPINE_GLIBC_BIN_PACKAGE_FILENAME" \
+#         "$ALPINE_GLIBC_BASE_URL/$ALPINE_GLIBC_PACKAGE_VERSION/$ALPINE_GLIBC_I18N_PACKAGE_FILENAME" && \
+#     apk add --no-cache \
+#         "$ALPINE_GLIBC_BASE_PACKAGE_FILENAME" \
+#         "$ALPINE_GLIBC_BIN_PACKAGE_FILENAME" \
+#         "$ALPINE_GLIBC_I18N_PACKAGE_FILENAME" && \
+#     \
+#     rm "/etc/apk/keys/sgerrand.rsa.pub" && \
+#     /usr/glibc-compat/bin/localedef --force --inputfile POSIX --charmap UTF-8 "$LANG" || true && \
+#     echo "export LANG=$LANG" > /etc/profile.d/locale.sh && \
+#     \
+#     apk del glibc-i18n && \
+#     \
+#     rm "/root/.wget-hsts" && \
+#     apk del .build-dependencies && \
+#     rm \
+#         "$ALPINE_GLIBC_BASE_PACKAGE_FILENAME" \
+#         "$ALPINE_GLIBC_BIN_PACKAGE_FILENAME" \
+#         "$ALPINE_GLIBC_I18N_PACKAGE_FILENAME"
 
 # install ca-certificates so that HTTPS works consistently
 # other runtime dependencies for Python are installed later
@@ -161,7 +207,13 @@ RUN apk update && apk add --no-cache bash \
     unixodbc-dev \
     unzip \
     wget \
-    zip
+    zip \
+    gfortran \
+    musl-dev \
+    freetype-dev \
+    libpng-dev \
+    openblas-dev \
+    libc6-compat
 
 # libc6-compat \
 # ----------[UWSGI-NGINX] -----------------
@@ -370,7 +422,8 @@ RUN chmod +x /entrypoint.sh
 ADD requirements.txt /tmp/requirements.txt
 ADD requirements-dev.txt /tmp/requirements-dev.txt
 RUN pip install --no-cache-dir -r /tmp/requirements.txt && \
-    pip install --no-cache-dir -r /tmp/requirements-dev.txt
+    pip install --no-cache-dir -r /tmp/requirements-dev.txt && \
+    pip install --no-cache-dir python-Consul==0.7.0
 
 # RUN adduser -S webapp
 # RUN addgroup -S webapp && adduser -S webapp -G webapp
@@ -426,6 +479,29 @@ RUN chmod +x /start.sh
 # Copy the entrypoint that will generate Nginx additional configs
 COPY ./virtualization/docker/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
+
+# ----- autopilotpattern ------ start
+
+# Add consul agent
+RUN export CONSUL_VERSION=1.0.6 \
+    && export CONSUL_CHECKSUM=bcc504f658cef2944d1cd703eda90045e084a15752d23c038400cf98c716ea01 \
+    && curl --retry 7 --fail -vo /tmp/consul.zip "https://releases.hashicorp.com/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_linux_amd64.zip" \
+    && echo "${CONSUL_CHECKSUM}  /tmp/consul.zip" | sha256sum -c \
+    && unzip /tmp/consul -d /usr/local/bin \
+    && rm /tmp/consul.zip \
+    && mkdir -p /opt/consul/config
+
+# Add ContainerPilot and set its configuration file path
+ENV CONTAINERPILOT_VER 3.7.0
+ENV CONTAINERPILOT /etc/containerpilot.json5
+RUN export CONTAINERPILOT_CHECKSUM=b10b30851de1ae1c095d5f253d12ce8fe8e7be17 \
+    && curl -Lso /tmp/containerpilot.tar.gz \
+        "https://github.com/joyent/containerpilot/releases/download/${CONTAINERPILOT_VER}/containerpilot-${CONTAINERPILOT_VER}.tar.gz" \
+    && echo "${CONTAINERPILOT_CHECKSUM}  /tmp/containerpilot.tar.gz" | sha1sum -c \
+    && tar zxf /tmp/containerpilot.tar.gz -C /usr/local/bin \
+    && rm /tmp/containerpilot.tar.gz
+
+# ----- autopilotpattern ------ end
 
 ENTRYPOINT ["/entrypoint.sh"]
 

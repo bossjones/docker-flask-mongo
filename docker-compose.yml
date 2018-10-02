@@ -10,10 +10,22 @@ services:
             - ./src:/app
     db:
         image: mongo:3.0.15
+        restart: always
         networks:
             - todo
         volumes:
             - "mongo-data:/data/db"
+
+
+    consul:
+      image: consul:0.7.5
+      command: agent -server -client=0.0.0.0 -bootstrap -ui
+      networks:
+        - todo
+      ports:
+        - "8500:8500"
+      restart: always
+
 networks:
     todo:
 
