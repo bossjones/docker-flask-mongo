@@ -9,7 +9,7 @@ services:
             - APP_PROFILER=1
             - APP_DEBUG_TOOLBAR=1
             - APP_DEBUG_TOOLBAR_SECRET_KEY=blah
-            - DEBUG_TB_INTERCEPT_REDIRECTS=1
+            # - DEBUG_TB_INTERCEPT_REDIRECTS=1
         cap_add:
             - SYS_PTRACE
             - NET_ADMIN
