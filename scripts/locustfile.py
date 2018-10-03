@@ -20,6 +20,7 @@ logger = logging.getLogger("dummy_locust")
 # class MyLocust(Locust):
 #     task_set = MyTaskSet
 
+VERBOSE_LOGS = True
 
 class ActionsTaskSet(TaskSet):
     """
