@@ -19,6 +19,7 @@ flask-monitoringdashboard==2.0.6
 flask-paginate==0.5.1     # via flask-monitoringdashboard
 flask-profiler==1.6
 flask-pymongo==2.1.0
+flask-sqlalchemy==2.3.2
 flask-wtf==0.14.2         # via flask-monitoringdashboard
 flask==1.0.2
 idna==2.7                 # via requests
@@ -37,7 +38,7 @@ pymongo==3.7.1            # via flask-pymongo
 pytz==2018.5              # via flask-monitoringdashboard, plotly, tzlocal
 requests==2.19.1
 six==1.11.0               # via plotly, traitlets
-sqlalchemy==1.2.12        # via flask-monitoringdashboard
+sqlalchemy==1.2.12        # via flask-monitoringdashboard, flask-sqlalchemy
 traitlets==4.3.2          # via jupyter-core, nbformat
 tzlocal==1.5.1            # via flask-monitoringdashboard
 urllib3==1.23             # via requests
