@@ -172,6 +172,8 @@ if "APP_DEBUG_TOOLBAR" in os.environ:
         #    'flask_debugtoolbar.panels.logger.LoggingPanel',
         #    'flask_debugtoolbar.panels.timer.TimerDebugPanel',
         # )
+    else:
+        app.config["DEBUG_TB_INTERCEPT_REDIRECTS"] = False
 
 
     toolbar = DebugToolbarExtension(app)
