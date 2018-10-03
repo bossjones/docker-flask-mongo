@@ -56,6 +56,7 @@ services:
         - ME_CONFIG_MONGODB_PORT=27017
         - ME_CONFIG_MONGODB_ENABLE_ADMIN=true
         # - ME_CONFIG_MONGODB_AUTH_DATABASE=admin
+        restart: always
         networks:
             - todo
         ports:
@@ -114,6 +115,8 @@ services:
     whoami:
         image: containous/whoami  # A container that exposes an API to show it's IP address
         command: -port 4110
+        ports:
+            - "4110:4110/tcp"
         networks:
             - todo
         labels:
