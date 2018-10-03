@@ -7,7 +7,7 @@ services:
             - LISTEN_PORT=8888
             - APP_DEBUG=1
             - APP_PROFILER=1
-            - APP_DEBUG_TOOLBAR=1
+            # - APP_DEBUG_TOOLBAR=1
             - APP_DEBUG_TOOLBAR_SECRET_KEY=blah
             - DEBUG_TB_INTERCEPT_REDIRECTS=0
         cap_add:

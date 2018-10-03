@@ -12,9 +12,13 @@ from flask_pymongo import PyMongo
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.wrappers import Response
 
+import random
+
 # from flask_cors import CORS
 
 app = Flask(__name__)
+
+app.config["MONGODB_SETTINGS"] = {"db": "tododb", "host": "db", "port": 27017}
 
 app.config["MONGO_URI"] = "mongodb://db:27017/tododb"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:////tmp/test.db"
@@ -28,9 +32,17 @@ if "APP_PROFILER" in os.environ:
     # flask-profiler as follows:
     app.config["flask_profiler"] = {
         "enabled": app.config["DEBUG"],
-        "storage": {"engine": "sqlite"},
+        "storage": {
+            "engine": "mongodb",
+            "MONGO_URL": "mongodb://%s" % app.config["MONGODB_SETTINGS"]["host"],
+            "DATABASE": app.config["MONGODB_SETTINGS"]["db"],
+            "COLLECTION": "flaskprofile",
+        },
         "basicAuth": {"enabled": True, "username": "admin", "password": "admin"},
         "ignore": ["^/static/.*"],
+        "sampling_function": lambda: True
+        if random.sample(list(range(1, 101)), 1) == [42]
+        else False,
     }
 
 dashboard.bind(app)
@@ -155,6 +167,10 @@ def redirect_example():
 
 # PROFILER
 if "APP_PROFILER" in os.environ:
+    app.logger.info(
+        "started flask profiler, recording to %s",
+        app.config["flask_profiler"]["storage"]["MONGO_URL"],
+    )
     # In order to active flask-profiler, you have to pass flask
     # app as an argument to flask-profiler.
     # All the endpoints declared so far will be tracked by flask-profiler.
@@ -174,7 +190,6 @@ if "APP_DEBUG_TOOLBAR" in os.environ:
         # )
     else:
         app.config["DEBUG_TB_INTERCEPT_REDIRECTS"] = False
-
 
     toolbar = DebugToolbarExtension(app)
 
