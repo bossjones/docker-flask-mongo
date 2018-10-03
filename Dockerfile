@@ -2,6 +2,10 @@ FROM tiangolo/uwsgi-nginx-flask:python3.6
 
 LABEL maintainer "Jarvis <jarvis@theblacktonystark.com>"
 
+# Add ContainerPilot and set its configuration file path
+ENV CONTAINERPILOT_VER 3.7.0
+ENV CONTAINERPILOT /etc/containerpilot.json5
+
 COPY ./virtualization/docker/nginx.conf /etc/nginx/nginx.conf
 COPY ./virtualization/docker/nginx-custom.conf /etc/nginx/conf.d/nginx.conf
 # Copy the base uWSGI ini file to enable default dynamic uwsgi process number
@@ -60,9 +64,6 @@ RUN export CONSUL_VERSION=1.0.6 \
     && rm /tmp/consul.zip \
     && mkdir -p /opt/consul/config
 
-# Add ContainerPilot and set its configuration file path
-ENV CONTAINERPILOT_VER 3.7.0
-ENV CONTAINERPILOT /etc/containerpilot.json5
 RUN export CONTAINERPILOT_CHECKSUM=b10b30851de1ae1c095d5f253d12ce8fe8e7be17 \
     && curl -Lso /tmp/containerpilot.tar.gz \
         "https://github.com/joyent/containerpilot/releases/download/${CONTAINERPILOT_VER}/containerpilot-${CONTAINERPILOT_VER}.tar.gz" \

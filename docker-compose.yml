@@ -9,6 +9,7 @@ services:
             - APP_PROFILER=1
             - APP_DEBUG_TOOLBAR=1
             - APP_DEBUG_TOOLBAR_SECRET_KEY=blah
+            - DEBUG_TB_INTERCEPT_REDIRECTS=1
         cap_add:
             - SYS_PTRACE
             - NET_ADMIN
@@ -82,6 +83,10 @@ services:
         - ./scripts:/scripts
 
     # docker run -it -v "$PWD/syslog-ng.conf":/etc/syslog-ng/syslog-ng.conf balabit/syslog-ng:latest
+    # TODO: https://hub.docker.com/r/balabit/syslog-ng/
+    # TODO: https://syslogng-kafka.readthedocs.io/en/latest/installation.html ( pay attention especially regarding memory leaks )
+    # NOTE: Test logs w/ 'loggen'
+    # SOURCE: https://www.syslog-ng.com/community/b/blog/posts/central-log-server-docker/
     syslog-ng:
       image: balabit/syslog-ng:latest
       networks:

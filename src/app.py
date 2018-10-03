@@ -164,13 +164,15 @@ if "APP_DEBUG_TOOLBAR" in os.environ:
     # set a 'SECRET_KEY' to enable the Flask session cookies
     app.config["SECRET_KEY"] = os.environ.get("APP_DEBUG_TOOLBAR_SECRET_KEY")
 
-    # SOURCE: https://github.com/mgood/flask-debugtoolbar/blob/master/example/example.py
-    app.config["DEBUG_TB_INTERCEPT_REDIRECTS"] = True
-    # app.config['DEBUG_TB_PANELS'] = (
-    #    'flask_debugtoolbar.panels.headers.HeaderDebugPanel',
-    #    'flask_debugtoolbar.panels.logger.LoggingPanel',
-    #    'flask_debugtoolbar.panels.timer.TimerDebugPanel',
-    # )
+    if "DEBUG_TB_INTERCEPT_REDIRECTS" in os.environ:
+        # SOURCE: https://github.com/mgood/flask-debugtoolbar/blob/master/example/example.py
+        app.config["DEBUG_TB_INTERCEPT_REDIRECTS"] = True
+        # app.config['DEBUG_TB_PANELS'] = (
+        #    'flask_debugtoolbar.panels.headers.HeaderDebugPanel',
+        #    'flask_debugtoolbar.panels.logger.LoggingPanel',
+        #    'flask_debugtoolbar.panels.timer.TimerDebugPanel',
+        # )
+
 
     toolbar = DebugToolbarExtension(app)
 
