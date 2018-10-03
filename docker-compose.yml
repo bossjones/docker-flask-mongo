@@ -91,6 +91,8 @@ services:
         - "601:601/tcp"
         - "6514:6514"
       restart: always
+    # volumes:
+    # - ./virtualization/docker/syslog-ng.conf:/etc/syslog-ng/syslog-ng.conf
 
     consul:
       image: consul:0.7.5
