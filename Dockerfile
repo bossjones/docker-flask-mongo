@@ -11,6 +11,32 @@ COPY ./virtualization/docker/uwsgi.ini /etc/uwsgi/
 # COPY ./virtualization/docker/entrypoint.sh /entrypoint.sh
 # RUN chmod +x /entrypoint.sh
 
+# Copy start.sh script that will check for a /app/prestart.sh script and run it before starting the app
+COPY ./virtualization/docker/start.sh /start.sh
+RUN chmod +x /start.sh
+
+# Copy the entrypoint that will generate Nginx additional configs
+COPY ./virtualization/docker/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+# Custom Supervisord config
+COPY ./virtualization/docker/supervisord.ini /etc/supervisor/conf.d/supervisord.conf
+
+RUN set -ex \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends \
+    curl \
+    jq \
+    less \
+    libjpeg-dev \
+    nfs-common \
+    unzip \
+    && \
+    apt-get install -y build-essential curl git && \
+    apt-get install -y zlib1g-dev libssl-dev libreadline-dev libyaml-dev libxml2-dev libxslt-dev bash-completion vim tree sudo python2.7-dev net-tools ngrep tcpdump arpwatch strace socat psmisc && \
+    apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
 ADD requirements.txt /tmp/requirements.txt
 ADD requirements-dev.txt /tmp/requirements-dev.txt
 RUN pip install --no-cache-dir -r /tmp/requirements.txt && \
@@ -20,20 +46,6 @@ RUN pip install --no-cache-dir -r /tmp/requirements.txt && \
 COPY ./src /app
 WORKDIR /app
 
-RUN set -ex \
-    && apt-get update \
-    && apt-get install -y --no-install-recommends \
-        curl \
-        jq \
-        less \
-        libjpeg-dev \
-        nfs-common \
-        unzip \
-    && \
-    apt-get install -y build-essential curl git && \
-    apt-get install -y zlib1g-dev libssl-dev libreadline-dev libyaml-dev libxml2-dev libxslt-dev bash-completion vim tree sudo python2.7-dev net-tools ngrep tcpdump arpwatch strace socat psmisc && \
-    apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
 
 # https://easyengine.io/tutorials/nginx/troubleshooting/emerg-bind-failed-98-address-already-in-use/
 # [emerg]: bind() to 0.0.0.0:80 failed (98: Address already in use)
@@ -57,17 +69,6 @@ RUN export CONTAINERPILOT_CHECKSUM=b10b30851de1ae1c095d5f253d12ce8fe8e7be17 \
     && echo "${CONTAINERPILOT_CHECKSUM}  /tmp/containerpilot.tar.gz" | sha1sum -c \
     && tar zxf /tmp/containerpilot.tar.gz -C /usr/local/bin \
     && rm /tmp/containerpilot.tar.gz
-
-# Copy start.sh script that will check for a /app/prestart.sh script and run it before starting the app
-COPY ./virtualization/docker/start.sh /start.sh
-RUN chmod +x /start.sh
-
-# Copy the entrypoint that will generate Nginx additional configs
-COPY ./virtualization/docker/entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
-
-# Custom Supervisord config
-COPY ./virtualization/docker/supervisord.ini /etc/supervisor/conf.d/supervisord.conf
 
 # By default, Nginx listens on port 80.
 # To modify this, change LISTEN_PORT environment variable.

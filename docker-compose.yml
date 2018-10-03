@@ -56,6 +56,8 @@ services:
         - ME_CONFIG_MONGODB_PORT=27017
         - ME_CONFIG_MONGODB_ENABLE_ADMIN=true
         # - ME_CONFIG_MONGODB_AUTH_DATABASE=admin
+        networks:
+            - todo
         ports:
         - "8081:8081"
         depends_on:
@@ -78,6 +80,16 @@ services:
         volumes:
         - ./scripts:/scripts
 
+    # docker run -it -v "$PWD/syslog-ng.conf":/etc/syslog-ng/syslog-ng.conf balabit/syslog-ng:latest
+    syslog-ng:
+      image: balabit/syslog-ng:latest
+      networks:
+        - todo
+      ports:
+        - "514:514/udp"
+        - "601:601/tcp"
+        - "6514:6514"
+      restart: always
 
     consul:
       image: consul:0.7.5
@@ -98,11 +110,14 @@ services:
     #     volumes:
     #     - /var/run/docker.sock:/var/run/docker.sock  # So that Traefik can listen to the Docker events
 
-    # # A container that exposes a simple API
-    # whoami:
-    #     image: emilevauge/whoami  # A container that exposes an API to show it's IP address
-    #     labels:
-    #     - "traefik.frontend.rule=Host:whoami.docker.localhost"
+    # A container that exposes a simple API
+    whoami:
+        image: containous/whoami  # A container that exposes an API to show it's IP address
+        command: -port 4110
+        networks:
+            - todo
+        labels:
+        - "traefik.frontend.rule=Host:whoami.hyenalab.home"
 
 networks:
     todo:

@@ -25,6 +25,7 @@ class ActionsTaskSet(TaskSet):
     """
     This is a container class that holds all locust load tests we want to run sequentally
     """
+
     @task
     def index(self):
         """Hit https://example.com/ endpoint
@@ -48,6 +49,7 @@ class MyLocust(HttpLocust):
         Decorators:
             task
     """
+
     weight = 1
     task_set = ActionsTaskSet
     min_wait = 2000

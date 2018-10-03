@@ -9,6 +9,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 
 from flask_pymongo import PyMongo
 from werkzeug.wrappers import Response
+
 # from flask_cors import CORS
 
 app = Flask(__name__)
@@ -16,23 +17,15 @@ app = Flask(__name__)
 app.config["MONGO_URI"] = "mongodb://db:27017/tododb"
 mongo = PyMongo(app)
 
-if 'APP_PROFILER' in os.environ:
+if "APP_PROFILER" in os.environ:
     app.config["DEBUG"] = True
     # You need to declare necessary configuration to initialize
     # flask-profiler as follows:
     app.config["flask_profiler"] = {
         "enabled": app.config["DEBUG"],
-        "storage": {
-            "engine": "sqlite"
-        },
-        "basicAuth":{
-            "enabled": True,
-            "username": "admin",
-            "password": "admin"
-        },
-        "ignore": [
-            "^/static/.*"
-        ]
+        "storage": {"engine": "sqlite"},
+        "basicAuth": {"enabled": True, "username": "admin", "password": "admin"},
+        "ignore": ["^/static/.*"],
     }
 
 dashboard.bind(app)
@@ -45,10 +38,12 @@ dashboard.bind(app)
 PORT = os.environ.get("LISTEN_PORT")
 
 # SOURCE: http://www.brool.com/post/debugging-uwsgi/
-if 'APP_DEBUG' in os.environ:
+if "APP_DEBUG" in os.environ:
     app.debug = True
     from werkzeug.debug import DebuggedApplication
+
     app.wsgi_app = DebuggedApplication(app.wsgi_app, True)
+
 
 @app.route("/hello")
 def hello():
@@ -87,26 +82,35 @@ def apiStatus():
     """api status"""
     return jsonify({"status": "OK"})
 
-@app.route('/json')
-def json():
-    return Response(response=jsonlib.dumps({'Hello': 'World'}), content_type='application/json')
 
-@app.route('/', methods=['POST'])
+@app.route("/json")
+def json():
+    return Response(
+        response=jsonlib.dumps({"Hello": "World"}), content_type="application/json"
+    )
+
+
+@app.route("/", methods=["POST"])
 def post_entry():
     params = request.get_json()
-    return Response(response=jsonlib.dumps({'name': params.get('name'), 'gender': params.get('gender')}),
-                    content_type='application/json')
+    return Response(
+        response=jsonlib.dumps(
+            {"name": params.get("name"), "gender": params.get("gender")}
+        ),
+        content_type="application/json",
+    )
+
 
 # PROFILER
-if 'APP_PROFILER' in os.environ:
+if "APP_PROFILER" in os.environ:
     # In order to active flask-profiler, you have to pass flask
     # app as an argument to flask-profiler.
     # All the endpoints declared so far will be tracked by flask-profiler.
     flask_profiler.init_app(app)
 
-if 'APP_DEBUG_TOOLBAR' in os.environ:
+if "APP_DEBUG_TOOLBAR" in os.environ:
     # set a 'SECRET_KEY' to enable the Flask session cookies
-    app.config['SECRET_KEY'] = os.environ.get("APP_DEBUG_TOOLBAR_SECRET_KEY")
+    app.config["SECRET_KEY"] = os.environ.get("APP_DEBUG_TOOLBAR_SECRET_KEY")
 
     toolbar = DebugToolbarExtension(app)
 

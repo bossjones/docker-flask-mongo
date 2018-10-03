@@ -2,6 +2,16 @@
 MAKEFLAGS += --warn-undefined-variables
 # .SHELLFLAGS := -eu -o pipefail
 
+URL_PATH_MONGO_EXPRESS := 8081
+URL_PATH_FLASK_APP     := 8888
+URL_PATH_UWSGI_STATS   := 9191
+URL_PATH_LOCUST_MASTER := 8089
+URL_PATH_CONSUL        := 8500
+URL_PATH_TRAEFIK       := 80
+URL_PATH_TRAEFIK_API   := 8080
+URL_PATH_WHOAMI        := 4110
+
+
 PR_SHA           := $(shell git rev-parse HEAD)
 REPO_NAME        := bossjones/docker-flask-mongo
 IMAGE_TAG        := $(REPO_NAME):$(PR_SHA)
@@ -202,3 +212,29 @@ tail:
 logs: tail
 
 rebuild: dc-build dc-up
+
+open-mongo-express:
+	./scripts/open-browser.py $(URL_PATH_MONGO_EXPRESS)
+
+open-flask-app:
+	./scripts/open-browser.py $(URL_PATH_FLASK_APP)
+
+open-uwsgi-stats:
+	./scripts/open-browser.py $(URL_PATH_UWSGI_STATS)
+
+open-locust-master:
+	./scripts/open-browser.py $(URL_PATH_LOCUST_MASTER)
+
+open-consul:
+	./scripts/open-browser.py $(URL_PATH_CONSUL)
+
+open-traefik:
+	./scripts/open-browser.py $(URL_PATH_TRAEFIK)
+
+open-traefik-api:
+	./scripts/open-browser.py $(URL_PATH_TRAEFIK_API)
+
+open-whoami:
+	./scripts/open-browser.py $(URL_PATH_WHOAMI)
+
+open: open-mongo-express open-flask-app open-uwsgi-stats open-locust-master open-consul open-traefik open-traefik-api open-whoami
