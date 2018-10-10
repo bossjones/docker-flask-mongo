@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+if [ ! -z "${DOCKER_HOST}" ]; then
+    _DOCKER_IP_ADDRESS=$(echo ${DOCKER_HOST} | sed 's,tcp://,,g' | cut -d':' -f1)
+    echo "http://${_DOCKER_IP_ADDRESS}"
+    exit 0
+fi
+
+echo "Docker host not detected"
+exit 1

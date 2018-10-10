@@ -2,18 +2,133 @@ version: "3"
 services:
     web:
         build: .
+        environment:
+            - FLASK_DEBUG=1
+            - LISTEN_PORT=8888
+            - APP_DEBUG=1
+            - APP_PROFILER=1
+            # - APP_DEBUG_TOOLBAR=1
+            - APP_DEBUG_TOOLBAR_SECRET_KEY=blah
+            - DEBUG_TB_INTERCEPT_REDIRECTS=0
+        cap_add:
+            - SYS_PTRACE
+            - NET_ADMIN
+            - SYS_ADMIN
+        security_opt:
+            - label:apparmor:unconfined
         ports:
+            - "8888:8888"
             - "5000:5000"
+            - "8080:8080"
+            - "9191:9191"
+            - "80:80"
+            - "443:443"
+        labels:
+            # - "traefik.backend=nginx1"
+            # - "traefik.frontend.rule=PathStrip: /nginx1"
+            # - "traefik.port=80"
+            # - "traefix.port=443"
+            # - "traefik.frontend.entryPoints=http"
+            - "traefik.enable=true"
+            - "traefik.backend=web"
+            - "traefik.port=80"
+            - "traefik.frontend.rule=Host:web.hyenalab.home"
+            - "traefik.backend.url=http://web.hyenalab.home"
         networks:
             - todo
         volumes:
             - ./src:/app
     db:
         image: mongo:3.0.15
+        restart: always
+        # environment:
+        # - MONGO_DATA_DIR=/data/db
+        # - MONGO_LOG_DIR=/dev/null
         networks:
             - todo
         volumes:
             - "mongo-data:/data/db"
+
+    mongoex:
+        image: mongo-express
+        environment:
+        - ME_CONFIG_OPTIONS_EDITORTHEME=ambiance
+        - ME_CONFIG_MONGODB_SERVER=db
+        - ME_CONFIG_MONGODB_PORT=27017
+        - ME_CONFIG_MONGODB_ENABLE_ADMIN=true
+        # - ME_CONFIG_MONGODB_AUTH_DATABASE=admin
+        restart: always
+        networks:
+            - todo
+        ports:
+        - "8081:8081"
+        depends_on:
+        - db
+
+    locust-master:
+        image: swernst/locusts
+        networks:
+            - todo
+        volumes:
+        - ./scripts:/scripts
+        ports:
+        - "8089:8089"
+
+    locust-worker:
+        image: swernst/locusts
+        networks:
+            - todo
+        command: "--master-host=locust-master"
+        volumes:
+        - ./scripts:/scripts
+
+    # docker run -it -v "$PWD/syslog-ng.conf":/etc/syslog-ng/syslog-ng.conf balabit/syslog-ng:latest
+    # TODO: https://hub.docker.com/r/balabit/syslog-ng/
+    # TODO: https://syslogng-kafka.readthedocs.io/en/latest/installation.html ( pay attention especially regarding memory leaks )
+    # NOTE: Test logs w/ 'loggen'
+    # SOURCE: https://www.syslog-ng.com/community/b/blog/posts/central-log-server-docker/
+    syslog-ng:
+      image: balabit/syslog-ng:latest
+      networks:
+        - todo
+      ports:
+        - "514:514/udp"
+        - "601:601/tcp"
+        - "6514:6514"
+      restart: always
+    # volumes:
+    # - ./virtualization/docker/syslog-ng.conf:/etc/syslog-ng/syslog-ng.conf
+
+    consul:
+      image: consul:0.7.5
+      command: agent -server -client=0.0.0.0 -bootstrap -ui
+      networks:
+        - todo
+      ports:
+        - "8500:8500"
+      restart: always
+
+    # The reverse proxy service (Træfik)
+    # reverse-proxy:
+    #     image: traefik  # The official Traefik docker image
+    #     command: --ping --api --docker  --docker.domain=hyenalab.home # Enables the web UI and tells Træfik to listen to docker
+    #     ports:
+    #     - "80:80"      # The HTTP port
+    #     - "8080:8080"  # The Web UI (enabled by --api)
+    #     volumes:
+    #     - /var/run/docker.sock:/var/run/docker.sock  # So that Traefik can listen to the Docker events
+
+    # A container that exposes a simple API
+    whoami:
+        image: containous/whoami  # A container that exposes an API to show it's IP address
+        command: -port 4110
+        ports:
+            - "4110:4110/tcp"
+        networks:
+            - todo
+        labels:
+        - "traefik.frontend.rule=Host:whoami.hyenalab.home"
+
 networks:
     todo:
 

@@ -1,4 +1,4 @@
-#! /usr/bin/env sh
+#! /usr/bin/env bash
 set -e
 
 # If there's a prestart.sh script in the /app directory, run it before starting

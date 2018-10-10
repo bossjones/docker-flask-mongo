@@ -9,5 +9,9 @@ colorlog
 voluptuous
 # graphviz
 flask
-pymongo
+# pymongo
 flask_monitoringdashboard
+flask_profiler
+flask-debugtoolbar
+Flask-PyMongo
+Flask-SQLAlchemy

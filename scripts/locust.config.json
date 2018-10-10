@@ -1,0 +1,4 @@
+{
+    "target": "http://web:8888",
+    "locusts": ["MyLocust"]
+  }
